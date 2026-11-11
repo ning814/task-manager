@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npm run build:server && npm run build:client",
+  "outputDirectory": "dist/client",
+  "rewrites": [{ "source": "/(.*)", "destination": "/api/index" }],
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "dist/**",
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  }
+}

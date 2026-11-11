@@ -87,3 +87,21 @@ create policy "anon can delete tasks" on tasks for delete to anon using (true);
 | POST | `/api/tasks` | 添加任务（`{ title, priority }`） |
 | PATCH | `/api/tasks/:id` | 更新任务（可更新 `title` / `priority` / `completed`） |
 | DELETE | `/api/tasks/:id` | 删除任务 |
+
+## 部署到 Vercel
+
+仓库已内置 `vercel.json`：
+
+- 构建命令：`npm run build:server && npm run build:client`
+- 运行方式：`api/index.js` 作为 Serverless 函数入口，同时提供 `/api` 接口和页面渲染
+- 静态资源：自动从 `dist/client` 提供
+
+部署步骤：
+
+1. 在 Vercel 中 Import 本仓库（Framework Preset 选 **Other**，其余保持默认，`vercel.json` 会自动生效）
+2. 在项目 **Settings → Environment Variables** 添加两个变量（Production 和 Preview 都要勾选）：
+   - `SUPABASE_URL` = `https://<你的项目>.supabase.co`
+   - `SUPABASE_ANON_KEY` = `<你的 anon/publishable key>`
+3. 点击 Deploy（或推送新提交触发重新部署）
+
+> 注意：`.env` 文件不会被提交，环境变量必须在 Vercel 控制台配置，否则后端启动时会提示"缺少环境变量"。
