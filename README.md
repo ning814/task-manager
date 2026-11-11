@@ -90,11 +90,12 @@ create policy "anon can delete tasks" on tasks for delete to anon using (true);
 
 ## 部署到 Vercel
 
-仓库已内置 `vercel.json`：
+仓库已内置 `vercel.json` 和 Serverless 入口，开箱可用：
 
-- 构建命令：`npm run build:server && npm run build:client`
-- 运行方式：`api/index.js` 作为 Serverless 函数入口，同时提供 `/api` 接口和页面渲染
-- 静态资源：自动从 `dist/client` 提供
+- 构建命令：`npm run build:client && node scripts/vercel-postbuild.js`
+- API：`api/[...route].js`（轻量 Serverless 函数，直接通过 `@supabase/supabase-js` 访问 Supabase REST API）
+- 页面：静态资源由 Vercel CDN 托管（`dist/client`），SPA 路由自动回退到 `index.html`
+- 前端与 API 同源，无需额外配置跨域
 
 部署步骤：
 
@@ -104,4 +105,13 @@ create policy "anon can delete tasks" on tasks for delete to anon using (true);
    - `SUPABASE_ANON_KEY` = `<你的 anon/publishable key>`
 3. 点击 Deploy（或推送新提交触发重新部署）
 
-> 注意：`.env` 文件不会被提交，环境变量必须在 Vercel 控制台配置，否则后端启动时会提示"缺少环境变量"。
+> 注意：`.env` 文件不会被提交，环境变量必须在 Vercel 控制台配置，否则接口会返回"缺少环境变量 SUPABASE_URL / SUPABASE_ANON_KEY"。
+
+### API 接口（Vercel 版）
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/tasks?priority=high\|medium\|low` | 任务列表（按创建时间倒序） |
+| POST | `/api/tasks` | 新增任务，body：`{ title, priority }` |
+| PATCH | `/api/tasks/:id` | 更新任务（title / priority / completed） |
+| DELETE | `/api/tasks/:id` | 删除任务 |
